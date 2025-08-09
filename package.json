@@ -2,7 +2,7 @@
   "name": "calculator",
   "version": "1.0.0",
   "main": "expo-router/entry",
-  "scripts": {
+   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
