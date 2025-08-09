@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, StatusBar, SafeAreaView } from "react-native";
 
-import Row from './components/Row'
+import Row from "./components/Row";
 import Button from "./components/Button";
 import calculator, { initialState } from "./util/calculator";
 
@@ -9,32 +9,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#202020",
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
   value: {
     color: "#fff",
     fontSize: 40,
     textAlign: "right",
     marginRight: 20,
-    marginBottom: 10
-  }
+    marginBottom: 10,
+  },
 });
 
 export default class App extends React.Component {
   state = initialState;
 
   handleTap = (type, value) => {
-    this.setState(state => calculator(type, value, state));
+    this.setState((state) => calculator(type, value, state));
   };
 
   render() {
+    const displayValue =
+      this.state.currentValue !== ""
+        ? parseFloat(this.state.currentValue).toLocaleString()
+        : "0";
+
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#202020" }}>
         <StatusBar barStyle="light-content" />
-        <SafeAreaView>
-          <Text style={styles.value}>
-            {parseFloat(this.state.currentValue).toLocaleString()}
-          </Text>
+        <View style={styles.container}>
+          <Text style={styles.value}>{displayValue}</Text>
+
           <Row>
             <Button
               text="C"
@@ -104,8 +108,8 @@ export default class App extends React.Component {
               onPress={() => this.handleTap("equal")}
             />
           </Row>
-        </SafeAreaView>
-      </View>
+        </View>
+      </SafeAreaView>
     );
   }
 }
