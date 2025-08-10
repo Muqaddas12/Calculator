@@ -22,22 +22,33 @@ const styles = StyleSheet.create({
 
 export default class App extends React.Component {
   state = initialState;
+  
 
   handleTap = (type, value) => {
-    this.setState((state) => calculator(type, value, state));
+    
+    this.setState((state) => calculator(type, value, state))
+    if(type=='equal')this.state.isEqual=true
   };
 
   render() {
+    // console.log(this.state.tempCurrentValue)
     const displayValue =
       this.state.currentValue !== ""
-        ? parseFloat(this.state.currentValue).toLocaleString()
+        ? parseFloat(this.state.currentValue)
         : "0";
-
+    const tempDisplayValue =
+      this.state.tempCurrentValue !== ""
+        ? this.state.tempCurrentValue
+        : "0";
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "#202020" }}>
         <StatusBar barStyle="light-content" />
         <View style={styles.container}>
-          <Text style={styles.value}>{displayValue}</Text>
+          <Text style={styles.value}>{tempDisplayValue}</Text>
+
+    {this.state.isEqual && (
+      <Text style={styles.value}>{displayValue}</Text>
+    )}
 
           <Row>
             <Button
@@ -111,5 +122,6 @@ export default class App extends React.Component {
         </View>
       </SafeAreaView>
     );
+    
   }
 }
