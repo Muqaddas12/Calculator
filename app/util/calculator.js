@@ -1,7 +1,9 @@
 export const initialState = {
   currentValue: "0",
   operator: null,
-  previousValue: null
+  previousValue: null,
+  tempCurrentValue:"0",
+  isEqual:false
 };
 
 export const handleNumber = (value, state) => {
@@ -9,20 +11,24 @@ export const handleNumber = (value, state) => {
   if (value === "." && state.currentValue.includes(".")) {
     return state;
   }
-
   // Replace 0 if starting fresh
   if (state.currentValue === "0" && value !== ".") {
-    return { currentValue: `${value}` };
+    if(state.tempCurrentValue=="0")
+    return { currentValue: `${value}`,tempCurrentValue:`${value}` };
+      
+    return { currentValue: `${value}`,tempCurrentValue:`${state.tempCurrentValue}${value}` };
   }
 
+
   return {
-    currentValue: `${state.currentValue}${value}`
+    currentValue: `${state.currentValue}${value}`,
+    tempCurrentValue:`${state.tempCurrentValue}${value}`
   };
 };
 
 export const handleEqual = (state) => {
   const { currentValue, previousValue, operator } = state;
-
+  // initialState.isEqual=true;
   const current = parseFloat(currentValue);
   const previous = parseFloat(previousValue);
   const resetState = {
@@ -70,7 +76,8 @@ const calculator = (type, value, state) => {
       return {
         operator: value,
         previousValue: state.currentValue,
-        currentValue: "0"
+        currentValue: "0",
+        tempCurrentValue:`${state.tempCurrentValue}${value}`
       };
 
     case "equal":
