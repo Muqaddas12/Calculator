@@ -1,11 +1,11 @@
 import React from "react";
+import { Stack } from "expo-router";
 import { CalculatorProvider } from "../contexts/CalculatorContext";
-import Calculator from "../components/calculator/Calculator";
 
-export default function Index() {
+export default function RootLayout() {
   return (
     <CalculatorProvider>
-      <Calculator />
+      <Stack screenOptions={{ headerShown: false }} />
     </CalculatorProvider>
   );
 }
