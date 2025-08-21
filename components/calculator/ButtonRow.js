@@ -6,5 +6,5 @@ export default function ButtonRow({ children }) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: "row", justifyContent: "space-between" },
+  row: { flexDirection: "row", },
 });

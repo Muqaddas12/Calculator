@@ -1,44 +1,49 @@
 export const initialState = {
-  currentValue: "0",     // what's being typed for the current operand; becomes "" after operator press
-  operator: null,
+  currentValue: "0",     // number being typed
+  operator: null,        // + - * /
   previousValue: null,   // first operand
-  equationLeft: "",      // e.g., "45 + " (for the equation line)
+  equationLeft: "",      // "45 + " etc.
+  previewResult: null,   // auto-calculated result shown live
 };
 
-// helpers
+// pure math
 const compute = (a, op, b) => {
   const x = parseFloat(a);
   const y = parseFloat(b);
+  if (isNaN(x) || isNaN(y)) return null;
   if (op === "/" && y === 0) return "Error";
+
   switch (op) {
     case "/": return String(x / y);
     case "*": return String(x * y);
     case "+": return String(x + y);
     case "-": return String(x - y);
-    default:  return null;
+    default: return null;
   }
 };
 
+// --- handlers ---
 const handleNumber = (digit, state) => {
   const curr = state.currentValue ?? "";
-  // prevent multiple decimals
   if (digit === "." && curr.includes(".")) return state;
 
-  // if just pressed operator, currentValue may be ""
-  if (curr === "0" && digit !== ".") {
-    return { ...state, currentValue: digit };
+  let newCurr = curr;
+  if (curr === "0" && digit !== ".") newCurr = digit;
+  else if (curr === "" && digit !== ".") newCurr = digit;
+  else if (curr === "" && digit === ".") newCurr = "0.";
+  else newCurr = curr + digit;
+
+  // live compute if operator is active
+  let preview = null;
+  if (state.operator && state.previousValue) {
+    preview = compute(state.previousValue, state.operator, newCurr);
   }
-  if (curr === "" && digit !== ".") {
-    return { ...state, currentValue: digit };
-  }
-  if (curr === "" && digit === ".") {
-    return { ...state, currentValue: "0." };
-  }
-  return { ...state, currentValue: curr + digit };
+
+  return { ...state, currentValue: newCurr, previewResult: preview };
 };
 
 const handleOperator = (op, state) => {
-  // If there's already an operator and user is changing it (no second operand typed yet)
+  // if user just changes operator before typing second number
   if (state.operator && (state.currentValue === "" || state.currentValue === "0")) {
     return {
       ...state,
@@ -47,20 +52,23 @@ const handleOperator = (op, state) => {
     };
   }
 
-  // Move currentValue to previousValue, keep it visible in equationLeft
+  // Move curr -> prev
   return {
     ...state,
     operator: op,
     previousValue: state.currentValue,
-    currentValue: "", // ready for second operand input (but first stays visible in equation line)
+    currentValue: "",
     equationLeft: `${state.currentValue} ${op} `,
+    previewResult: null,
   };
 };
 
 const handleEqual = (state) => {
   const { previousValue, operator, currentValue } = state;
-  if (!previousValue || !operator || currentValue === "" || currentValue == null) return state;
+  console.log('state',state)
+  if (!previousValue || !operator || !currentValue) return state;
   const result = compute(previousValue, operator, currentValue);
+  console.log('result',result)
   return {
     ...initialState,
     currentValue: String(result),
@@ -69,12 +77,27 @@ const handleEqual = (state) => {
 
 const handlePosNeg = (state) => {
   const target = state.currentValue === "" ? "0" : state.currentValue;
-  return { ...state, currentValue: String(parseFloat(target) * -1) };
+  const flipped = String(parseFloat(target) * -1);
+
+  // live recompute if operator exists
+  let preview = state.previewResult;
+  if (state.operator && state.previousValue) {
+    preview = compute(state.previousValue, state.operator, flipped);
+  }
+
+  return { ...state, currentValue: flipped, previewResult: preview };
 };
 
 const handlePercent = (state) => {
   const target = state.currentValue === "" ? "0" : state.currentValue;
-  return { ...state, currentValue: String(parseFloat(target) * 0.01) };
+  const perc = String(parseFloat(target) * 0.01);
+
+  let preview = state.previewResult;
+  if (state.operator && state.previousValue) {
+    preview = compute(state.previousValue, state.operator, perc);
+  }
+
+  return { ...state, currentValue: perc, previewResult: preview };
 };
 
 const handleClear = () => ({ ...initialState });
@@ -84,20 +107,21 @@ const handleLoadEquation = (entry) => ({
   operator: entry.operator ?? null,
   previousValue: entry.prev ?? null,
   equationLeft: entry.prev && entry.operator ? `${entry.prev} ${entry.operator} ` : "",
+  previewResult: null,
 });
 
-// reducer
+// --- reducer ---
 const calculatorReducer = (action, state) => {
   const { type, value } = action;
   switch (type) {
-    case "number":      return handleNumber(value, state);
-    case "operator":    return handleOperator(value, state);
-    case "equal":       return handleEqual(state);
-    case "posneg":      return handlePosNeg(state);
-    case "percentage":  return handlePercent(state);
-    case "clear":       return handleClear();
+    case "number": return handleNumber(value, state);
+    case "operator": return handleOperator(value, state);
+    case "equal": return handleEqual(state);
+    case "posneg": return handlePosNeg(state);
+    case "percentage": return handlePercent(state);
+    case "clear": return handleClear();
     case "load_equation": return handleLoadEquation(value);
-    default:            return state;
+    default: return state;
   }
 };
 

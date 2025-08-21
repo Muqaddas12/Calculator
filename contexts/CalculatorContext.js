@@ -1,79 +1,144 @@
 import React, { createContext, useContext, useReducer } from "react";
 
-const CalculatorContext = createContext();
-
-const initialState = {
+// initial state
+export const initialState = {
+  expression: "",
   currentValue: "0",
-  previousValue: null,
-  operator: null,
-  history: "", // <-- keep equation history here
+  result: "",
+  justEvaluated: false,
 };
 
+// safe eval helper
+const safeEval = (expr) => {
+  try {
+    const sanitized = expr.replace(/[^-()\d/*+.]/g, "");
+    // eslint-disable-next-line no-new-func
+    return Function(`"use strict"; return (${sanitized})`)();
+  } catch (e) {
+    return null;
+  }
+};
+
+// reducer
 function reducer(state, action) {
   switch (action.type) {
-    case "number": {
-      if (state.currentValue === "0" && action.value !== ".") {
-        return { ...state, currentValue: action.value };
-      }
-      if (action.value === "." && state.currentValue.includes(".")) {
-        return state;
-      }
-      return { ...state, currentValue: state.currentValue + action.value };
-    }
+    case "clear":
+      return { ...initialState };
 
-    case "operator": {
+    case "backspace": {
+      if (state.justEvaluated) {
+        return state; // no backspace right after "="
+      }
+      const updated =
+        state.currentValue.length > 1
+          ? state.currentValue.slice(0, -1)
+          : "0";
       return {
         ...state,
-        operator: action.value,
-        previousValue: state.currentValue,
-        currentValue: "0",
-        history: `${state.currentValue} ${action.value}`, // build equation
+        currentValue: updated,
+      };
+    }
+
+   case "number": {
+  if (state.justEvaluated) {
+    // start fresh after "="
+    return {
+      ...state,
+      currentValue: action.value,
+      expression: action.value,
+      result: "",
+      justEvaluated: false,
+    };
+  }
+
+  // Get the current operand (after the last operator)
+  const lastOperand = state.expression.split(/[-+*/]/).pop();
+
+  // Prevent multiple decimals in the same operand
+  if (action.value === "." && lastOperand.includes(".")) {
+    return state; // ignore extra "."
+  }
+
+  const newVal =
+    state.currentValue === "0" && action.value !== "."
+      ? action.value
+      : state.currentValue + action.value;
+
+  return {
+    ...state,
+    currentValue: newVal,
+    expression: state.expression + action.value,
+    result: safeEval(state.expression + action.value),
+  };
+}
+
+    case "operator": {
+      const lastChar = state.expression.slice(-1);
+      if (/[+\-*/]/.test(lastChar)) {
+        // replace last operator
+        return {
+          ...state,
+          expression: state.expression.slice(0, -1) + action.value,
+          justEvaluated: false,
+        };
+      }
+
+      if (state.justEvaluated) {
+        // continue from result
+        return {
+          ...state,
+          expression: state.currentValue + action.value,
+          justEvaluated: false,
+        };
+      }
+
+      return {
+        ...state,
+        expression: state.expression + action.value,
+        justEvaluated: false,
       };
     }
 
     case "equal": {
-      const { previousValue, operator, currentValue } = state;
-      if (!previousValue || !operator) return state;
-
-      const a = parseFloat(previousValue);
-      const b = parseFloat(currentValue);
-      let result = 0;
-
-      if (operator === "/" && b === 0) {
-        return { ...initialState, currentValue: "Error" };
-      }
-
-      switch (operator) {
-        case "+": result = a + b; break;
-        case "-": result = a - b; break;
-        case "*": result = a * b; break;
-        case "/": result = a / b; break;
-        default: return state;
-      }
+      const fullExpr = state.expression || state.currentValue;
+      const result = safeEval(fullExpr);
 
       return {
-        currentValue: String(result),
-        previousValue: null,
-        operator: null,
-        history: `${previousValue} ${operator} ${currentValue} =`, // show full equation
+        ...state,
+        currentValue: result !== null ? String(result) : "0",
+        expression: result !== null ? String(result) : "0",
+        result: "",
+        justEvaluated: true,
       };
     }
 
-    case "clear":
-      return initialState;
+    case "posneg": {
+      const val = String(-(parseFloat(state.currentValue) || 0));
+      return {
+        ...state,
+        currentValue: val,
+        expression: val,
+      };
+    }
 
-    case "posneg":
-      return { ...state, currentValue: String(parseFloat(state.currentValue) * -1) };
-
-    case "percentage":
-      return { ...state, currentValue: String(parseFloat(state.currentValue) * 0.01) };
+    case "percentage": {
+      const val = String((parseFloat(state.currentValue) || 0) / 100);
+      return {
+        ...state,
+        currentValue: val,
+        expression: val,
+      };
+    }
 
     default:
       return state;
   }
 }
 
-export const CalculatorProvider = ({ children }) => {
+// context
+const CalculatorContext = createContext();
+
+export function CalculatorProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const handlePress = (type, value) => {
@@ -85,6 +150,8 @@ export const CalculatorProvider = ({ children }) => {
       {children}
     </CalculatorContext.Provider>
   );
-};
+}
 
-export const useCalculator = () => useContext(CalculatorContext);
+export function useCalculator() {
+  return useContext(CalculatorContext);
+}
