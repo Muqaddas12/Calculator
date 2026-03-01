@@ -1,65 +1,44 @@
-Privacy Policy – Calculator
+Privacy Policy – Calculator - All in one
 
-At Calculator, your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information when you use our mobile application.
+Effective Date: 01/03/2026
 
-
----
-
+At Calculator, developed by MTBYOwn, your privacy is very important to us. This Privacy Policy explains how we collect, use, and protect your information when you use our mobile application available on the Google Play Store.
 1. Information We Collect
-
 a. Personal Information
-We do not collect any personal information such as your name, email address, or contact number unless explicitly provided by you for support or feedback.
+
+We do not collect any personal information such as your name, email address, phone number, or address unless you explicitly provide it to us for support or feedback purposes.
 
 b. Calculation Data
-All calculations performed using the Calculator app are processed locally on your device. We do not store, upload, or transmit any calculation history to our servers. You have full control over your data.
+
+All calculations performed using the Calculator app are processed locally on your device. We do not store, upload, or transmit your calculation history to our servers. You have full control over your data.
 
 c. Crash & Usage Data
-To improve app performance and fix bugs, we may collect anonymous crash reports and usage analytics through tools like Google Play Console. These do not contain any personally identifiable information.
 
-
----
-
+To improve app performance and fix bugs, we may collect anonymous crash reports and usage analytics through services such as Google Play Console. This data does not contain personally identifiable information and is used only to improve app stability and performance.
 2. Permissions Used
 
-The Calculator app may request access to:
+Calculator may request access to:
 
-Storage – if you choose to save history, notes, or exported results.
-We only use these permissions to provide the core functionality of the app.
+Storage – To save calculation history, notes, or exported results (only if you choose to use these features).
 
-
-
----
+We only use these permissions to provide the core functionality of the app. We do not access your data for any unrelated purposes.
 
 3. Data Security
 
-We value your trust and take precautions to keep your data safe. All calculation history (if saved) is stored locally on your device and is not transmitted to any external servers by us.
+We value your trust and take reasonable security measures to protect your information. All saved data remains stored locally on your device and is not transmitted to any external servers by us.
 
 
----
+4. Children’s Privacy
 
-4. Third-Party Services
+Calculator is not intended for children under the age of 13. We do not knowingly collect personal data from children. If you believe that a child has provided us with personal information, please contact us and we will take appropriate action.
 
-The Calculator app may use third-party libraries or SDKs (such as analytics or ad services) which may collect limited, anonymized data. Please refer to those providers' privacy policies for more information.
+5. Changes to This Privacy Policy
 
+We may update this Privacy Policy from time to time. We recommend reviewing this page periodically for any changes. Updates become effective immediately after being posted.
 
----
+6. Contact Us
 
-5. Children’s Privacy
+If you have any questions or concerns regarding this Privacy Policy, you may contact the developer:
 
-Our app is not intended for children under the age of 13. We do not knowingly collect personal data from children.
-
-
----
-
-6. Changes to This Policy
-
-We may update our Privacy Policy from time to time. We recommend reviewing this page periodically for any changes. Changes are effective immediately once posted here.
-
-
----
-
-7. Contact Us
-
-If you have any questions or concerns about this Privacy Policy, feel free to contact us at:
-
-📧 admin@mtbyown.com
+Developer Name: MTBYOWN
+📧 Email: admin@mtbyown.com
